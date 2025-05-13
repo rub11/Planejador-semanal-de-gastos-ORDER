@@ -1,0 +1,140 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Planejador Semanal de Gastos</title>
+  <style>
+    body {
+      background-color: #0f0f0f;
+      color: #f5f5dc;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 40px 20px;
+      margin: 0;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #1c1c1c;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+    }
+    h1 {
+      text-align: center;
+      color: gold;
+      margin-bottom: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #333;
+      color: gold;
+    }
+    td input {
+      width: 100%;
+      padding: 8px;
+      background: #2a2a2a;
+      color: #f5f5dc;
+      border: none;
+      border-radius: 4px;
+    }
+    .totais {
+      text-align: right;
+      font-size: 1.2em;
+      margin-top: 20px;
+    }
+    .actions {
+      text-align: center;
+      margin-top: 30px;
+    }
+    button {
+      background: gold;
+      color: black;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #e6c200;
+    }
+    @media (max-width: 600px) {
+      th, td {
+        font-size: 14px;
+        padding: 6px;
+      }
+      .totais {
+        font-size: 1em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🗓️ Planejador Semanal de Gastos</h1>
+    <form id="gastosForm">
+      <table>
+        <thead>
+          <tr>
+            <th>Semana</th>
+            <th>Descrição</th>
+            <th>Valor (R$)</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaGastos">
+          <!-- 4 semanas, 3 linhas por semana -->
+          ${[...Array(4)].map((_, s) => [...Array(3)].map((_, i) => `
+            <tr>
+              <td>Semana ${s + 1}</td>
+              <td><input type="text" name="descricao${s}${i}" placeholder="Ex: Supermercado"/></td>
+              <td><input type="number" name="valor${s}${i}" min="0" step="0.01" oninput="atualizarTotal()"/></td>
+            </tr>
+          `).join('')).join('')}
+        </tbody>
+      </table>
+    </form>
+    <div class="totais">
+      <strong>Total Mensal: R$ <span id="total">0.00</span></strong>
+    </div>
+    <div class="actions">
+      <button onclick="window.print()">🖨️ Imprimir Planejamento</button>
+    </div>
+  </div>
+
+  <script>
+    function atualizarTotal() {
+      const inputs = document.querySelectorAll('input[type=number]');
+      let total = 0;
+      inputs.forEach(input => {
+        const val = parseFloat(input.value);
+        if (!isNaN(val)) {
+          total += val;
+        }
+      });
+      document.getElementById('total').textContent = total.toFixed(2);
+    }
+    // Renderizar HTML com JavaScript puro para múltiplas linhas
+    document.getElementById('tabelaGastos').innerHTML = Array.from({ length: 4 }).map((_, s) =>
+      Array.from({ length: 3 }).map((_, i) => `
+        <tr>
+          <td>Semana ${s + 1}</td>
+          <td><input type="text" name="descricao${s}${i}" placeholder="Ex: Supermercado"/></td>
+          <td><input type="number" name="valor${s}${i}" min="0" step="0.01" oninput="atualizarTotal()"/></td>
+        </tr>
+      `).join('')
+    ).join('');
+  </script>
+</body>
+</html>
